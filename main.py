@@ -76,14 +76,19 @@ if __name__ == '__main__':
     book_name = ''
     page_cnt = 0
     img_urls = []
+    multi_chapter_flag = 1
     for ind, url in enumerate(urls):
         js_url = urljoin(url, js_relpath)
         js_res = auth_get(js_url, session, username, password)
         print(js_url)
         s = str(js_res.content, js_res.apparent_encoding)
         page_now = int(re.search(r'totalPageCount=(\d+)', s).group(1))
-        if book_name == '':
-            book_name = re.search(r'bookConfig.bookTitle="(\d+)"', s).group(1)
+        try:
+            if book_name == '':
+                book_name = re.search(r'bookConfig.bookTitle="(\d+)"', s).group(1)
+        except Exception:
+            multi_chapter_flag = 0
+            book_name = 'Book_download'
         print(book_name, page_now)
         print('Chapter: %d' % (ind + 1))
         img_fmt = get_fmt(url, img_relpath, candi_fmts, session, username, password)  # 获取图片格式
